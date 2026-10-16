@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dear Santa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,500;0,700;1,500;1,700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f4f4f1;--ink:#0d0d0d;--mute:#7a7a75;--line:#dcdcd6;--acc:#b3121b;--snow:154,160,170;--fd:"Playfair Display","Didot","Bodoni 72",Georgia,serif;--f:"Inter",-apple-system,system-ui,"Helvetica Neue",Arial,sans-serif;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0a0a0b;--ink:#f4f4f1;--mute:#85857f;--line:#242427;--acc:#ff4b4b;--snow:255,255,255}}
+:root[data-theme="dark"]{--bg:#0a0a0b;--ink:#f4f4f1;--mute:#85857f;--line:#242427;--acc:#ff4b4b;--snow:255,255,255}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--f);font-size:18px;display:flex;flex-direction:column;overflow:hidden;-webkit-font-smoothing:antialiased}
+#snow{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:50}
+header{flex:none;padding:28px 40px 24px;display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;border-bottom:1px solid var(--line)}
+h1{font-family:var(--fd);font-size:clamp(46px,7vw,108px);line-height:.95;margin:0;font-weight:700;letter-spacing:-.03em}
+h1 i{font-style:italic;font-weight:500;color:var(--acc)}
+.meta{text-align:right;font-size:15px;color:var(--mute);line-height:1.5;letter-spacing:.02em}
+.meta b{display:block;color:var(--ink);font-family:var(--fd);font-style:italic;font-size:38px;letter-spacing:-.01em;font-weight:500}
+main{flex:1;display:grid;grid-template-columns:1fr 1fr;min-height:0}
+section.pane{overflow-y:auto;padding:28px 40px 60px;min-height:0}
+#inspo{border-right:1px solid var(--line)}
+h2{font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.16em;color:var(--mute);margin:0 0 6px}
+.chips{position:sticky;top:-28px;background:var(--bg);padding:14px 0;margin-bottom:10px;display:flex;gap:22px;overflow-x:auto;z-index:2;border-bottom:1px solid var(--line)}
+.chip{border:0;background:none;color:var(--mute);padding:0;font:500 16px var(--f);white-space:nowrap;cursor:pointer}
+.chip:hover,.chip.on{color:var(--ink)}
+.cat{padding-top:34px}
+.cat h3{font-family:var(--fd);font-size:clamp(38px,4.4vw,60px);font-weight:700;font-style:italic;letter-spacing:-.02em;margin:0 0 8px;line-height:1}
+.row{display:flex;align-items:center;gap:16px;padding:18px 0;border-bottom:1px solid var(--line)}
+.row .t{flex:1}
+.row b{display:block;font-family:var(--fd);font-size:28px;font-weight:500;letter-spacing:-.01em;line-height:1.1}
+.row small{display:block;color:var(--mute);font-size:16px;margin-top:3px}
+.plus{flex:none;width:46px;height:46px;border-radius:50%;border:1.5px solid var(--ink);background:none;color:var(--ink);font:400 26px/1 var(--f);cursor:pointer;transition:.15s}
+.plus:hover:not(:disabled){background:var(--acc);border-color:var(--acc);color:#fff}
+.plus:disabled{background:var(--ink);color:var(--bg);font-size:20px;cursor:default}
+form{display:flex;flex-direction:column;gap:6px;margin:8px 0 26px}
+input[type=text]{font:500 32px var(--fd);letter-spacing:-.01em;padding:14px 0;border:0;border-bottom:2px solid var(--ink);background:none;color:var(--ink);outline:none;width:100%}
+input[name=note]{font:400 18px var(--f);letter-spacing:0;border-bottom:1px solid var(--line);padding:10px 0}
+input::placeholder{color:var(--mute)}
+input:focus{border-color:var(--acc)}
+.add{margin-top:14px;align-self:flex-start;background:var(--ink);color:var(--bg);border:0;border-radius:99px;padding:15px 34px;font:600 17px var(--f);cursor:pointer}
+.add:hover{background:var(--acc);color:#fff}
+.mine{display:flex;align-items:center;gap:16px;padding:18px 0;border-bottom:1px solid var(--line)}
+.mine.done .t{text-decoration:line-through;opacity:.35}
+.mine input{appearance:none;flex:none;width:26px;height:26px;border:1.5px solid var(--ink);border-radius:50%;margin:0;cursor:pointer}
+.mine input:checked{background:var(--acc);border-color:var(--acc)}
+.mine .t{flex:1}
+.mine b{display:block;font-family:var(--fd);font-size:28px;font-weight:500;letter-spacing:-.01em;line-height:1.1}
+.mine small{color:var(--mute);font-size:15px}
+#gate{position:fixed;inset:0;z-index:40;background:var(--bg);display:flex;align-items:center;justify-content:center;text-align:center;padding:24px}.gbox{width:min(420px,100%)}#gate .gt{font-family:var(--fd);font-size:clamp(46px,10vw,92px);font-weight:700;line-height:1;margin:0 0 12px;letter-spacing:-.03em}#gate p{color:var(--mute);margin:0 0 28px}#pin{font:500 44px var(--fd);text-align:center;letter-spacing:.4em;border:0;border-bottom:2px solid var(--ink);background:none;color:var(--ink);width:100%;outline:none;padding:10px 0}#pin.bad{border-color:var(--acc);animation:sh .3s}@keyframes sh{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}#gmsg{margin-top:16px;color:var(--acc);min-height:22px;font-size:16px}.link{border:0;background:none;color:var(--ink);text-decoration:underline;font:inherit;cursor:pointer;padding:0}#rec{margin:14px 0 4px}#rec input{font:500 22px var(--fd);padding:12px 0}#rec .add{padding:11px 24px;font-size:15px;margin-top:8px}#recm{color:var(--mute);font-size:15px;min-height:20px;margin-top:6px}
+.refresh{margin-top:24px;border:1.5px solid var(--ink);background:none;color:var(--ink);border-radius:99px;padding:14px 28px;font:600 16px var(--f);cursor:pointer;transition:.15s}.refresh:hover{background:var(--acc);border-color:var(--acc);color:#fff}.done-msg{color:var(--mute);font-size:20px;padding:22px 0}
+.x{border:0;background:none;color:var(--mute);font-size:28px;cursor:pointer}
+.x:hover{color:var(--acc)}
+.empty{color:var(--mute);font-size:22px;letter-spacing:-.02em;padding:30px 0}
+@media (max-width:760px){
+html,body{height:auto}body{overflow:auto}main{display:flex;flex-direction:column}section.pane{overflow:visible;padding:24px 22px}#mine-pane{order:-1}#inspo{border-right:0;border-top:1px solid var(--line)}.chips{top:0}header{padding:22px}.meta{text-align:left}
+}
+</style>
+</head>
+<body>
+<canvas id="snow"></canvas>
+<div id="gate"><div class="gbox"><div class="gt">Dear Santa</div><p>Enter your password</p><input type="password" id="pin" inputmode="numeric" maxlength="4" placeholder="••••" autocomplete="off" aria-label="Password"><div id="gmsg"></div></div></div>
+<header>
+  <h1>Dear<br><i>Santa,</i><span id="yr" hidden></span></h1>
+  <div class="meta"><b id="days"></b>until Christmas<br><span id="count"></span><br><span id="who"></span> <button class="link" id="out" type="button">Switch user</button></div>
+</header>
+<main>
+  <section class="pane" id="inspo">
+    <h2>Inspiration</h2>
+    <form id="rec"><input type="text" id="recq" placeholder="Tell me what you like: pilates, matcha, travel…" autocomplete="off"><button class="add" type="submit" id="recb">Get more ideas</button><div id="recm"></div></form>
+    <div class="chips" id="chips"></div>
+    <div id="cats"></div>
+  </section>
+  <section class="pane" id="mine-pane">
+    <h2 id="lh">Your list</h2>
+    <form id="f">
+      <input type="text" name="name" placeholder="Add an idea" required autocomplete="off">
+      <input type="text" name="note" placeholder="Size, color, link (optional)" autocomplete="off">
+      <button class="add" type="submit">Add to list</button>
+    </form>
+    <div id="list"></div>
+  </section>
+</main>
+<script>
+const DATA=[
+{n:"Wellness & Tech",i:[["Whoop","Screenless fitness & sleep band"],["Hatch Restore","Sunrise alarm + sound machine"],["Oura Ring","Sleep and recovery tracker"],["AirPods","Wireless earbuds"],["Kindle","Cozy-night reading"],["Polaroid Camera","Instant film memories"]]},
+{n:"Golf",i:[["Golf Glove & Balls","Stock up for the season"],["Rangefinder","Know every yardage"],["Golf Polo","Clean, performance fit"],["Putting Mat","Practice at home"],["Insulated Cooler Bag","Cart essential"],["Course Gift Card","A round on a nice course"]]},
+{n:"School",i:[["Backpack","Roomy and sturdy"],["Planner","Stay on top of deadlines"],["Noise-Canceling Headphones","Library focus mode"],["Water Bottle","Tumbler or insulated bottle"],["Desk Lamp","Warm study light"],["Gel Pens & Highlighters","Color-coded notes"]]},
+{n:"Makeup",i:[["Lip Oil & Gloss","Shiny, easy daily wear"],["Blush","Cream or powder"],["Brush Set","Soft, full face set"],["Palette","Eyeshadow neutrals"],["Mascara","Lengthening favorite"],["Makeup Bag","Cute travel pouch"]]},
+{n:"Self-Care",i:[["Face Mask Set","Spa night in"],["Moisturizer","Hydrating daily cream"],["Lip Mask","Overnight softness"],["Candle","Cozy scent, long burn"],["Silk Pillowcase","Hair and skin friendly"],["Hair Tools","Dryer or curling wand"]]},
+{n:"Cozy & Home",i:[["Fuzzy Blanket","Oversized and soft"],["Slippers","Warm indoor pair"],["Fairy Lights","Room glow-up"],["Mini Fridge","Room snacks"],["Coffee Maker","Latte at home"],["Photo Frames","Favorite memories"]]},
+{n:"Fashion",i:[["Sweatshirt","Matching set or classic crew"],["Leggings","Everyday favorite"],["Sneakers","Fresh pair"],["Jewelry","Dainty gold or silver"],["Puffer Jacket","Winter essential"],["Tote Bag","Carries everything"]]},
+{n:"Luxury",i:[["Chanel Classic Flap","The forever handbag"],["Louis Vuitton Neverfull","Iconic everyday tote"],["Cartier Love Bracelet","Signature gold screw motif"],["Hermès Silk Scarf","Wear it five ways"],["Van Cleef Alhambra","Clover necklace"],["Rolex Datejust","Classic timepiece"]]}
+];
+const $=s=>document.querySelector(s);
+let mine=[],user=null;
+const PINS={"1111":"CHLOE","2468":"CHARLES","3468":"YVONNE"};
+const lkey=()=>"xmas-list-"+user;
+const save=()=>{if(!user)return;try{localStorage.setItem(lkey(),JSON.stringify(mine))}catch(e){}};
+const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const now=new Date(),d=Math.ceil((new Date(now.getFullYear(),11,25)-now)/864e5);
+$("#days").textContent=d>0?d+" days":"Today";
+$("#yr").textContent=String(now.getFullYear()).slice(2);
+
+$("#chips").innerHTML=DATA.map((c,k)=>`<button class="chip" data-k="${k}">${c.n}</button>`).join("");
+$("#cats").innerHTML=DATA.map((c,k)=>`<div class="cat" id="c${k}"><h3>${c.n}</h3>${c.i.map((x,j)=>`<div class="row"><div class="t"><b>${x[0]}</b><small>${x[1]}</small></div><button class="plus" data-k="${k}" data-j="${j}" aria-label="Add ${x[0]}">+</button></div>`).join("")}</div>`).join("");
+
+function render(){
+  $("#count").textContent=mine.length+(mine.length===1?" item":" items")+" on your list";
+  $("#list").innerHTML=mine.length?mine.map((m,i)=>`<div class="mine ${m.done?"done":""}"><input type="checkbox" data-i="${i}" ${m.done?"checked":""} aria-label="Got it"><div class="t"><b>${esc(m.name)}</b>${m.note?`<small>${esc(m.note)}</small>`:""}</div><button class="x" data-del="${i}" aria-label="Remove">×</button></div>`).join(""):`<div class="empty">Nothing yet. Add from the inspiration or write your own.</div>`;
+  document.querySelectorAll(".plus").forEach(b=>{const has=mine.some(m=>m.name===DATA[b.dataset.k].i[b.dataset.j][0]);b.disabled=has;b.textContent=has?"✓":"+"});
+}
+$("#chips").onclick=e=>{const b=e.target.closest(".chip");if(b)$("#c"+b.dataset.k).scrollIntoView({behavior:"smooth",block:"start"})};
+$("#cats").onclick=e=>{const b=e.target.closest(".plus");if(!b)return;const c=DATA[b.dataset.k],x=c.i[b.dataset.j];mine.push({name:x[0],note:x[1],cat:c.n,done:false});save();render()};
+$("#f").onsubmit=e=>{e.preventDefault();const f=e.target,n=f.name.value.trim();if(!n)return;mine.unshift({name:n,note:f.note.value.trim(),cat:"Mine",done:false});f.reset();save();render()};
+$("#list").onclick=e=>{const x=e.target.closest("[data-del]");if(x){mine.splice(+x.dataset.del,1);save();render()}};
+$("#list").onchange=e=>{if(e.target.dataset.i!==undefined){mine[+e.target.dataset.i].done=e.target.checked;save();render()}};
+render();
+
+/* more ideas + refresh */
+const MORE={"Wellness & Tech":[["Apple Watch","Fitness, texts, and health"],["Theragun","Massage gun for recovery"],["Bose Speaker","Portable and loud"],["Smart Water Bottle","Tracks hydration"],["Ring Light","Even lighting for photos"],["Portable Charger","Power on the go"],["Sony Headphones","Studio-grade noise canceling"],["Instax Mini","Pocket instant camera"],["Echo Dot","Voice assistant and music"],["Sleep Mask","Bluetooth or weighted"],["Phone Tripod","Content and group shots"],["Smart Plug Set","Automate your space"]],
+"Golf":[["Titleist Pro V1","Premium golf balls"],["Golf Towel","Magnetic and clean"],["Divot Tool","Stylish and useful"],["Golf Hat","Structured or relaxed"],["Quarter-Zip","Layer for cool rounds"],["Stand Bag","Lightweight carry bag"],["Swing Trainer","Tempo and grip"],["Ball Marker Set","Personalized markers"],["Launch Monitor","Track every shot"],["Rain Jacket","Stay dry on the course"],["Golf Shoes","Spikeless comfort"],["Club Headcovers","Fun and protective"]],
+"School":[["Laptop Sleeve","Padded and slim"],["Sticky Notes","Tabs and flags"],["Mechanical Pencils","Smooth, no smudge"],["iPad Stand","Study setup"],["Big Tumbler","Refills all day"],["Pastel Highlighters","Soft and bright"],["Desk Organizer","Everything in reach"],["Index Cards","Study faster"],["Blue Light Glasses","Easier on late nights"],["Wireless Mouse","Quiet clicks"],["Notebook Set","Dot grid or ruled"],["Calculator","Graphing or scientific"]],
+"Makeup":[["Setting Spray","Locks it in all day"],["Concealer","Soft, full coverage"],["Bronzer","Warm, natural glow"],["Eyelash Curler","Lift and open"],["Lip Liner","Defined and neat"],["Brow Gel","Natural, fluffy brows"],["Highlighter","Subtle shimmer"],["Foundation","Skin-like finish"],["Sponge Set","Blend easily"],["Vanity Mirror","Light-up desk mirror"],["Lipstick Set","Neutrals and reds"],["Makeup Remover","Gentle balm or wipes"]],
+"Self-Care":[["Bath Bombs","Soak and unwind"],["Jade Roller","Cool facial massage"],["Body Oil","Glowing skin"],["Robe","Plush and warm"],["SPF Moisturizer","Daily protection"],["Hair Mask","Deep conditioning"],["Eye Patches","Quick refresh"],["Diffuser","Calming scents"],["Foot Mask","Soft feet overnight"],["Scalp Massager","Relaxing and refreshing"],["Perfume","Signature scent"],["Journal","Evening reset"]],
+"Cozy & Home":[["Throw Pillows","Textured accents"],["Weighted Blanket","Deep calm"],["Mug Warmer","Hot drinks, longer"],["Wall Art","Prints for your space"],["Bean Bag","Lounge anywhere"],["Heated Blanket","Winter essential"],["Sunset Lamp","Moody glow"],["Plant & Pot","Easy greenery"],["Cozy Socks","Soft and thick"],["Cookbook","Weekend cooking"],["Board Game","Game night staple"],["LED Mirror","Room upgrade"]],
+"Luxury":[["Dyson Airwrap","Salon styling at home"],["Diptyque Candle","Signature Paris scent"],["La Mer Crème","Cult moisturizer"],["Bottega Veneta Wallet","Woven leather"],["Gucci Belt","Logo buckle classic"],["Tiffany T Bracelet","Sleek and polished"],["Aesop Hand Set","Wash and balm duo"],["Jo Malone Cologne","Fresh, layered scents"],["Prada Nylon Bag","Minimal and sleek"],["Goyard Cardholder","Canvas and leather"],["Loro Piana Scarf","Pure cashmere"],["Saint Laurent Sunglasses","Sharp, timeless frames"]],
+"Fashion":[["Beanie","Warm and easy"],["Scarf","Soft, oversized"],["Crossbody Bag","Hands-free essential"],["Gold Hoops","Everyday earrings"],["Jeans","Perfect fit pair"],["Boots","Cozy classics"],["Sunglasses","Everyday frames"],["Watch","Minimal or classic"],["Belt Bag","Compact and trendy"],["Cardigan","Layering staple"],["Wool Socks","Warm and stylish"],["Sneaker Cleaner","Keep them fresh"]]};
+DATA.forEach(c=>c.i.push(...(MORE[c.n]||[])));
+const shown=DATA.map(()=>[0,1,2,3,4,5]),seen=DATA.map(()=>new Set([0,1,2,3,4,5]));
+const isAdded=(k,j)=>mine.some(m=>m.name===DATA[k].i[j][0]);
+function drawCat(k){
+  const rows=shown[k].map(j=>{const x=DATA[k].i[j];return `<div class="row"><div class="t"><b>${x[0]}</b><small>${x[1]}</small></div><button class="plus" data-k="${k}" data-j="${j}" aria-label="Add ${x[0]}">+</button></div>`}).join("")||`<div class="done-msg">You've added everything here.</div>`;
+  $("#c"+k).innerHTML=`<h3>${DATA[k].n}</h3>${rows}<button class="refresh" data-k="${k}">↻ Refresh ideas</button>`;
+}
+function refresh(k){
+  const all=DATA[k].i.map((_,j)=>j).filter(j=>!isAdded(k,j));
+  let pool=all.filter(j=>!seen[k].has(j));
+  if(pool.length<6){seen[k]=new Set(pool);const rest=all.filter(j=>!pool.includes(j)).sort(()=>Math.random()-.5);pool=pool.concat(rest.slice(0,6-pool.length))}
+  pool.sort(()=>Math.random()-.5);
+  shown[k]=pool.slice(0,6);shown[k].forEach(j=>seen[k].add(j));
+  drawCat(k);render();
+  $("#c"+k).scrollIntoView({behavior:"smooth",block:"start"});
+}
+DATA.forEach((_,k)=>drawCat(k));
+$("#cats").addEventListener("click",e=>{const b=e.target.closest(".refresh");if(b)refresh(+b.dataset.k)});
+render();
+
+/* per-user inspo sets */
+const BASE=DATA.slice();
+const CH=[
+{n:"Wellness",i:[["Whoop","Screenless fitness & sleep band"],["Oura Ring","Sleep and recovery tracker"],["Hatch Restore","Sunrise alarm + sound machine"],["Theragun","Massage gun for recovery"],["Cold Plunge Tub","At-home recovery"],["Sauna Blanket","Infrared heat sessions"],["Normatec Boots","Compression recovery"],["Weighted Blanket","Deeper sleep"],["Air Purifier","Cleaner bedroom air"],["Blue Light Glasses","Easier on screens"],["Sleep Mask","Total darkness"],["Meditation Subscription","Calm or Headspace"],["Acupressure Mat","Back and neck relief"],["Smart Scale","Body composition tracking"],["Electrolyte Set","Hydration, simplified"],["Water Filter Pitcher","Better-tasting water"],["Foam Roller","Loosen tight muscles"],["Massage Chair Pad","Daily reset at home"]]},
+{n:"Self Care",i:[["Beard Oil Kit","Soft, fresh, shaped"],["Electric Razor","Smooth, fast shave"],["Cologne","Signature scent"],["Face Wash Set","Simple daily routine"],["Leather Dopp Kit","Grooming on the go"],["Hair Clipper Set","Home barber kit"],["Body Scrub & Wash","Shower upgrade"],["Cedar Candle","Warm, woody scent"],["Plush Robe","Post-shower comfort"],["Cozy Slippers","Warm indoor pair"],["Shave Kit","Brush, razor, soap"],["SPF Moisturizer","Daily protection"],["Grooming Kit","Trimmers and tools"],["Lip Balm Set","Winter essential"],["Hair Pomade","Hold without shine"],["Hand Cream","Soft hands in winter"],["Scalp Massager","Relaxing and refreshing"],["Luxe Bath Towels","Hotel-level soft"]]},
+{n:"Travel",i:[["Carry-On Suitcase","Hard-shell, spins smoothly"],["Packing Cubes","Organized bag"],["Noise-Canceling Headphones","Quiet flights"],["Weekender Duffel","Quick trips"],["Passport Holder","Leather and slim"],["AirTag Set","Never lose luggage"],["Neck Pillow","Comfy long flights"],["Portable Charger","Power on the go"],["Travel Adapter","Works worldwide"],["Toiletry Bag","Hangs and zips"],["Compression Socks","Fresh legs after flying"],["Luggage Scale","Skip overweight fees"],["Packable Rain Jacket","Light and compact"],["Sling Backpack","Day-trip carry"],["Polarized Sunglasses","Glare-free views"],["Travel Journal","Capture each trip"],["GoPro","Adventure footage"],["Scratch-Off Map","Track places visited"]]},
+{n:"Exercise",i:[["Adjustable Dumbbells","Full set, small footprint"],["Running Shoes","Fresh daily trainers"],["Weighted Vest","Level up walks and runs"],["Resistance Bands","Portable strength"],["Gym Duffel","Carries all gear"],["Jump Rope","Quick cardio"],["Pull-Up Bar","Doorway upper body"],["Training Shorts","Lightweight and breathable"],["Shaker Bottle","Protein on the go"],["Lifting Gloves","Better grip"],["Yoga Mat","Stretch and mobility"],["Kettlebell","Versatile strength"],["Compression Sleeves","Support and recovery"],["Dry-Fit Tees","Sweat-wicking basics"],["Gym Towel","Quick-dry microfiber"],["Protein Powder","Post-workout fuel"],["Boxing Gloves","Heavy bag training"],["Gym Earbuds","Secure fit for workouts"]]}
+];
+function buildInspo(name){
+  const sets=name==="CHARLES"?[BASE.find(c=>c.n==="Golf"),...CH]:BASE;
+  DATA.length=0;DATA.push(...sets);
+  shown.length=0;seen.length=0;
+  DATA.forEach(()=>{shown.push([0,1,2,3,4,5]);seen.push(new Set([0,1,2,3,4,5]))});
+  $("#chips").innerHTML=DATA.map((c,k)=>`<button class="chip" data-k="${k}">${c.n}</button>`).join("");
+  $("#cats").innerHTML=DATA.map((_,k)=>`<div class="cat" id="c${k}"></div>`).join("");
+  DATA.forEach((_,k)=>drawCat(k));
+  try{io.disconnect();document.querySelectorAll(".cat").forEach(c=>io.observe(c))}catch(e){}
+}
+
+/* login + recommendations */
+function loadList(){
+  try{
+    let s=localStorage.getItem(lkey());
+    if(s===null){const o=localStorage.getItem("xmas-list");if(o!==null){s=o;localStorage.removeItem("xmas-list")}}
+    mine=JSON.parse(s||"[]");
+  }catch(e){mine=[]}
+  save();
+}
+function enter(name){
+  user=name;try{sessionStorage.setItem("xmas-user",name)}catch(e){}
+  loadList();buildInspo(name);
+  $("#who").textContent="Signed in as "+name;
+  $("#lh").textContent=name+"'s list";
+  render();
+}
+function unlock(name){
+  $("#gate .gt").textContent=name;$("#gate p").textContent="Welcome";
+  $("#pin").style.display="none";$("#gmsg").textContent="";
+  setTimeout(()=>{$("#gate").remove();enter(name)},1200);
+}
+$("#pin").addEventListener("input",e=>{
+  const v=e.target.value;
+  if(PINS[v])unlock(PINS[v]);
+  else if(v.length>=4){e.target.classList.add("bad");$("#gmsg").textContent="That password isn't right.";setTimeout(()=>{e.target.value="";e.target.classList.remove("bad")},450)}
+  else $("#gmsg").textContent="";
+});
+$("#out").onclick=()=>{try{sessionStorage.removeItem("xmas-user")}catch(e){}location.reload()};
+try{const s=sessionStorage.getItem("xmas-user");if(s&&Object.values(PINS).includes(s)){$("#gate").remove();enter(s)}else $("#pin").focus()}catch(e){}
+
+const KW={golf:"Golf",school:"School",study:"School",college:"School",makeup:"Makeup",beauty:"Makeup",skin:"Self-Care",spa:"Self-Care",cozy:"Cozy & Home",home:"Cozy & Home",room:"Cozy & Home",fashion:"Fashion",clothes:"Fashion",style:"Fashion",tech:"Wellness & Tech",fitness:"Wellness & Tech",gym:"Wellness & Tech",luxury:"Luxury",travel:"Travel",trip:"Travel",exercise:"Exercise",workout:"Exercise",wellness:"Wellness",grooming:"Self Care",designer:"Luxury",jewel:"Luxury"};
+const clean=s=>String(s||"").replace(/[<>"&]/g,"").trim().slice(0,70);
+function addPicks(title,items){
+  const k=DATA.length;
+  DATA.push({n:title,i:items});shown.push(items.slice(0,6).map((_,j)=>j));seen.push(new Set(shown[k]));
+  const cat=document.createElement("div");cat.className="cat";cat.id="c"+k;
+  $("#cats").prepend(cat);
+  const chip=document.createElement("button");chip.className="chip";chip.dataset.k=k;chip.textContent="✦ "+title;
+  $("#chips").prepend(chip);
+  io.observe(cat);drawCat(k);render();
+  cat.scrollIntoView({behavior:"smooth",block:"start"});
+}
+$("#rec").onsubmit=async e=>{
+  e.preventDefault();
+  const q=$("#recq").value.trim();if(!q)return;
+  const btn=$("#recb"),msg=$("#recm");btn.disabled=true;msg.textContent="Finding ideas…";
+  try{
+    const s=await claude.use("sample");
+    if(!s)throw new Error("unavailable");
+    const r=await s.json(`Suggest Christmas gift ideas related to what this person likes: "${q.slice(0,200)}". Return ONLY JSON shaped like {"title":"a 2-4 word category name","items":[["Specific product or gift","3-6 word note"]]} with exactly 12 items, varied from affordable to a splurge, no prices.`,{cache:false});
+    const items=(r.items||[]).filter(x=>Array.isArray(x)&&x[0]).map(x=>[clean(x[0]),clean(x[1])]).filter(x=>x[0]);
+    if(items.length<6)throw new Error("few");
+    addPicks(clean(r.title).slice(0,32)||"Picked for you",items);msg.textContent="";$("#recq").value="";
+  }catch(err){
+    const lc=q.toLowerCase(),hit=Object.keys(KW).find(w=>lc.includes(w));
+    const sub=hit?DATA.filter(c=>c.n===KW[hit]):[];const pool=(sub.length?sub:DATA).flatMap(c=>c.i).filter(x=>!mine.some(m=>m.name===x[0])).sort(()=>Math.random()-.5).slice(0,12);
+    if(pool.length<6)msg.textContent="Couldn't find ideas for that. Try another interest.";
+    else{addPicks(hit?"More "+KW[hit]:"Ideas for you",pool);msg.textContent="Showing curated ideas.";$("#recq").value=""}
+  }
+  btn.disabled=false;
+};
+
+/* sort recommendations into existing headers */
+const norm=s=>String(s).toLowerCase().replace(/[^a-z]/g,"");
+function headerFor(q,h){
+  const lc=q.toLowerCase();
+  let k=h?DATA.findIndex(c=>norm(c.n)===norm(h)):-1;
+  if(k<0)k=DATA.findIndex(c=>lc.includes(c.n.toLowerCase()));
+  if(k<0){const w=Object.keys(KW).find(w=>lc.includes(w));if(w)k=DATA.findIndex(c=>norm(c.n)===norm(KW[w]))}
+  return k;
+}
+function showIdeas(k,idx){
+  shown[k]=idx;idx.forEach(j=>seen[k].add(j));
+  drawCat(k);render();
+  $("#c"+k).scrollIntoView({behavior:"smooth",block:"start"});
+}
+$("#rec").onsubmit=async e=>{
+  e.preventDefault();
+  const q=$("#recq").value.trim();if(!q)return;
+  const btn=$("#recb"),msg=$("#recm");btn.disabled=true;msg.textContent="Finding ideas…";
+  try{
+    const s=await claude.use("sample");
+    if(!s)throw new Error("unavailable");
+    const names=DATA.map(c=>c.n);
+    const r=await s.json(`Someone is picking Christmas gifts and says they're into: "${q.slice(0,200)}". Choose the ONE header from this list that fits best, copied exactly: ${names.join(", ")}. Then suggest 12 specific gift ideas that fit that header and what they said, from affordable to a splurge, no prices. Return ONLY JSON: {"header":"<exact header>","items":[["Specific product or gift","3-6 word note"]]}`,{cache:false});
+    let k=headerFor(q,clean(r.header));
+    if(k<0)k=headerFor(q);
+    if(k<0)k=0;
+    const have=new Set(DATA[k].i.map(x=>x[0].toLowerCase()));
+    const fresh=(r.items||[]).filter(x=>Array.isArray(x)&&x[0]).map(x=>[clean(x[0]),clean(x[1])]).filter(x=>x[0]&&!have.has(x[0].toLowerCase()));
+    if(fresh.length<3)throw new Error("few");
+    const start=DATA[k].i.length;DATA[k].i.push(...fresh);
+    showIdeas(k,fresh.map((_,j)=>start+j));
+    msg.textContent="Added "+fresh.length+" ideas under "+DATA[k].n+".";$("#recq").value="";
+  }catch(err){
+    const k=headerFor(q);
+    if(k<0)msg.textContent="Try a topic that fits a header, like "+DATA.map(c=>c.n).slice(0,3).join(", ")+".";
+    else{
+      const idx=DATA[k].i.map((_,j)=>j).filter(j=>!isAdded(k,j)&&!shown[k].includes(j)).sort(()=>Math.random()-.5).slice(0,12);
+      if(!idx.length)msg.textContent="You've seen everything under "+DATA[k].n+".";
+      else{showIdeas(k,idx);msg.textContent="More ideas under "+DATA[k].n+".";$("#recq").value=""}
+    }
+  }
+  btn.disabled=false;
+};
+
+/* highlight active chip */
+const io=new IntersectionObserver(es=>es.forEach(en=>{if(en.isIntersecting){document.querySelectorAll(".chip").forEach(c=>c.classList.toggle("on","c"+c.dataset.k===en.target.id))}}),{root:$("#inspo"),rootMargin:"-10% 0px -80% 0px"});
+document.querySelectorAll(".cat").forEach(c=>io.observe(c));
+
+/* snow */
+(function(){
+const c=$("#snow"),x=c.getContext("2d");let W,H,fl=[];
+const calm=matchMedia("(prefers-reduced-motion: reduce)").matches;
+function size(){W=c.width=innerWidth;H=c.height=innerHeight}
+size();addEventListener("resize",size);
+for(let i=0;i<(calm?25:90);i++)fl.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*2+.8,s:Math.random()*.8+.4,p:Math.random()*6.28,a:Math.random()*.45+.25});
+function tick(){
+const rgb=getComputedStyle(document.documentElement).getPropertyValue("--snow").trim()||"255,255,255";
+x.clearRect(0,0,W,H);
+for(const f of fl){
+f.y+=f.s;f.p+=.01;f.x+=Math.sin(f.p)*.4;
+if(f.y>H+5){f.y=-5;f.x=Math.random()*W}
+x.beginPath();x.arc(f.x,f.y,f.r,0,6.28);x.fillStyle="rgba("+rgb+","+f.a+")";x.fill();
+}
+if(!calm)requestAnimationFrame(tick)}
+tick();
+})();
+</script>
+</body>
+</html>
